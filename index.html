@@ -243,12 +243,12 @@ function setText(){
   $("tTitle").textContent=x.title;$("tIntro").textContent=x.intro;$("go").textContent=x.start;
   $("lvlLbl").textContent=x.level;$("scoreLbl").textContent=x.score;$("streakLbl").textContent=x.streak;
   $("tOver").textContent=x.over;$("again").textContent=x.again;showBest();
-  $("acctT").textContent=x.acct;$("lbT").textContent=x.lb;$("lbEmpty").textContent=x.lbEmpty;$("nick").placeholder=x.nickPh;$("nickBtn").textContent=x.nickBtn;renderAcct();if(FB)setAuthText();
+  $("acctT").textContent=x.acct;$("lbT").textContent=x.lb;$("lbEmpty").textContent=x.lbEmpty;$("nick").placeholder=x.nickPh;$("nickBtn").textContent=x.nickBtn;renderAcct();if(FB||NOCFG)setAuthText();
   if(cur)$("cat").textContent=x.cat[cur.cat];
 }
 function showBest(){const b=store("eq_best");$("best").textContent=b?t().best(...b.split("|")):t().nobest}
 function start(){
-  if(FB&&!FBU)return;
+  if(NOCFG||(FB&&!FBU))return;
   S={level:1,score:0,streak:0,lives:3,right:0};bag=[];
   $("start").classList.add("hide");$("over").classList.add("hide");$("game").classList.remove("hide");$("acct").classList.add("hide");
   load();
@@ -300,6 +300,7 @@ Object.assign(L.es,{acct:"Perfil de jugador",signed:n=>`Sesión iniciada como ${
 let DB=null,UM=null,UID=null;
 async function initAccount(){
   if(initFirebase())return startFbAuth();
+  if(!window.claude)return startNoConfig();
   try{if(window.claude){UM=await claude.use("user");DB=await claude.use("db");if(UM&&DB)UID=await UM.id()}}catch(e){}
   if(!UID)DB=null;
   renderAcct();loadLB();
@@ -336,11 +337,11 @@ async function saveScore(){
   }catch(e){$("osum").textContent+=" "+t().ro}
 }
 // ---------- Secure sign-in (Firebase Auth + Firestore). With no config below, the page behaves as before.
-const FIREBASE_CONFIG={apiKey:"",authDomain:"",projectId:"",appId:""}; // paste your Firebase web app config here
-Object.assign(L.en,{aTitle:"Welcome back",tabIn:"Sign in",tabUp:"Create account",aName:"Display name",aEmail:"Email",aPass:"Password (8+ characters)",subIn:"Sign in",subUp:"Create account",google:"Continue with Google",forgot:"Forgot password?",guestBtn:"Play as guest",signOut:"Sign out",signIn:"Sign in",fbGuest:"Playing as a guest. Sign in to post your score to the leaderboard.",eFill:"Enter your email and password.",eName:"Enter a display name.",eWeak:"Password must be at least 8 characters.",eCred:"Incorrect email or password.",eUsed:"We couldn't create that account. Try signing in instead.",eMany:"Too many attempts. Wait a few minutes and try again.",eNet:"Network error. Check your connection.",eEmail:"Enter a valid email address.",eGen:"Something went wrong. Please try again.",eReset:"Enter your email first, then select Forgot password.",resetSent:"If an account exists for that email, a reset link is on its way.",verifySent:"Account created. We sent a verification email. Verify it to post scores to the leaderboard.",needVerify:"Verify your email to post scores to the leaderboard."});
-Object.assign(L.fil,{aTitle:"Maligayang pagbabalik",tabIn:"Mag-sign in",tabUp:"Gumawa ng account",aName:"Display name",aEmail:"Email",aPass:"Password (8+ character)",subIn:"Mag-sign in",subUp:"Gumawa ng account",google:"Magpatuloy gamit ang Google",forgot:"Nakalimutan ang password?",guestBtn:"Maglaro bilang guest",signOut:"Mag-sign out",signIn:"Mag-sign in",fbGuest:"Naglalaro bilang guest. Mag-sign in para mai-post ang score mo sa leaderboard.",eFill:"Ilagay ang email at password.",eName:"Maglagay ng display name.",eWeak:"Dapat hindi bababa sa 8 character ang password.",eCred:"Mali ang email o password.",eUsed:"Hindi namin magawa ang account na iyon. Subukang mag-sign in.",eMany:"Masyadong maraming subok. Maghintay ng ilang minuto at subukan ulit.",eNet:"May problema sa network. Tingnan ang koneksyon mo.",eEmail:"Maglagay ng wastong email address.",eGen:"May nangyaring mali. Subukan ulit.",eReset:"Ilagay muna ang email, saka piliin ang Nakalimutan ang password.",resetSent:"Kung may account para sa email na iyon, papunta na ang reset link.",verifySent:"Nagawa na ang account. Nagpadala kami ng verification email. I-verify ito para makapag-post ng score sa leaderboard.",needVerify:"I-verify ang email mo para makapag-post ng score sa leaderboard."});
-Object.assign(L.es,{aTitle:"Bienvenido de nuevo",tabIn:"Iniciar sesión",tabUp:"Crear cuenta",aName:"Nombre visible",aEmail:"Correo electrónico",aPass:"Contraseña (8+ caracteres)",subIn:"Iniciar sesión",subUp:"Crear cuenta",google:"Continuar con Google",forgot:"¿Olvidaste tu contraseña?",guestBtn:"Jugar como invitado",signOut:"Cerrar sesión",signIn:"Iniciar sesión",fbGuest:"Jugando como invitado. Inicia sesión para publicar tu puntuación en la clasificación.",eFill:"Escribe tu correo y contraseña.",eName:"Escribe un nombre visible.",eWeak:"La contraseña debe tener al menos 8 caracteres.",eCred:"Correo o contraseña incorrectos.",eUsed:"No pudimos crear esa cuenta. Prueba a iniciar sesión.",eMany:"Demasiados intentos. Espera unos minutos e inténtalo de nuevo.",eNet:"Error de red. Revisa tu conexión.",eEmail:"Escribe un correo válido.",eGen:"Algo salió mal. Inténtalo de nuevo.",eReset:"Escribe primero tu correo y luego elige ¿Olvidaste tu contraseña?",resetSent:"Si existe una cuenta con ese correo, el enlace de restablecimiento va en camino.",verifySent:"Cuenta creada. Enviamos un correo de verificación. Verifícalo para publicar puntuaciones en la clasificación.",needVerify:"Verifica tu correo para publicar puntuaciones en la clasificación."});
-let FB=null,FBU=null,guestMode=false,authMode="in",lastUid="__init__";
+const FIREBASE_CONFIG={apiKey:"AIzaSyChRd18jDdYd_FjrZ1V5hu4VecJprWLNPI",authDomain:"quiz-earn-learn.firebaseapp.com",projectId:"quiz-earn-learn",appId:"1:339472385426:web:3f59948bddbe4ba2c6ad4b"}; // paste your Firebase web app config here
+Object.assign(L.en,{noCfg:"Sign-in isn't set up yet. The site owner needs to add the Firebase config.",aTitle:"Welcome back",tabIn:"Sign in",tabUp:"Create account",aName:"Display name",aEmail:"Email",aPass:"Password (8+ characters)",subIn:"Sign in",subUp:"Create account",google:"Continue with Google",forgot:"Forgot password?",guestBtn:"Play as guest",signOut:"Sign out",signIn:"Sign in",fbGuest:"Playing as a guest. Sign in to post your score to the leaderboard.",eFill:"Enter your email and password.",eName:"Enter a display name.",eWeak:"Password must be at least 8 characters.",eCred:"Incorrect email or password.",eUsed:"We couldn't create that account. Try signing in instead.",eMany:"Too many attempts. Wait a few minutes and try again.",eNet:"Network error. Check your connection.",eEmail:"Enter a valid email address.",eGen:"Something went wrong. Please try again.",eReset:"Enter your email first, then select Forgot password.",resetSent:"If an account exists for that email, a reset link is on its way.",verifySent:"Account created. We sent a verification email. Verify it to post scores to the leaderboard.",needVerify:"Verify your email to post scores to the leaderboard."});
+Object.assign(L.fil,{noCfg:"Hindi pa naka-set up ang sign-in. Kailangang idagdag ng may-ari ng site ang Firebase config.",aTitle:"Maligayang pagbabalik",tabIn:"Mag-sign in",tabUp:"Gumawa ng account",aName:"Display name",aEmail:"Email",aPass:"Password (8+ character)",subIn:"Mag-sign in",subUp:"Gumawa ng account",google:"Magpatuloy gamit ang Google",forgot:"Nakalimutan ang password?",guestBtn:"Maglaro bilang guest",signOut:"Mag-sign out",signIn:"Mag-sign in",fbGuest:"Naglalaro bilang guest. Mag-sign in para mai-post ang score mo sa leaderboard.",eFill:"Ilagay ang email at password.",eName:"Maglagay ng display name.",eWeak:"Dapat hindi bababa sa 8 character ang password.",eCred:"Mali ang email o password.",eUsed:"Hindi namin magawa ang account na iyon. Subukang mag-sign in.",eMany:"Masyadong maraming subok. Maghintay ng ilang minuto at subukan ulit.",eNet:"May problema sa network. Tingnan ang koneksyon mo.",eEmail:"Maglagay ng wastong email address.",eGen:"May nangyaring mali. Subukan ulit.",eReset:"Ilagay muna ang email, saka piliin ang Nakalimutan ang password.",resetSent:"Kung may account para sa email na iyon, papunta na ang reset link.",verifySent:"Nagawa na ang account. Nagpadala kami ng verification email. I-verify ito para makapag-post ng score sa leaderboard.",needVerify:"I-verify ang email mo para makapag-post ng score sa leaderboard."});
+Object.assign(L.es,{noCfg:"El inicio de sesión aún no está configurado. El propietario del sitio debe añadir la configuración de Firebase.",aTitle:"Bienvenido de nuevo",tabIn:"Iniciar sesión",tabUp:"Crear cuenta",aName:"Nombre visible",aEmail:"Correo electrónico",aPass:"Contraseña (8+ caracteres)",subIn:"Iniciar sesión",subUp:"Crear cuenta",google:"Continuar con Google",forgot:"¿Olvidaste tu contraseña?",guestBtn:"Jugar como invitado",signOut:"Cerrar sesión",signIn:"Iniciar sesión",fbGuest:"Jugando como invitado. Inicia sesión para publicar tu puntuación en la clasificación.",eFill:"Escribe tu correo y contraseña.",eName:"Escribe un nombre visible.",eWeak:"La contraseña debe tener al menos 8 caracteres.",eCred:"Correo o contraseña incorrectos.",eUsed:"No pudimos crear esa cuenta. Prueba a iniciar sesión.",eMany:"Demasiados intentos. Espera unos minutos e inténtalo de nuevo.",eNet:"Error de red. Revisa tu conexión.",eEmail:"Escribe un correo válido.",eGen:"Algo salió mal. Inténtalo de nuevo.",eReset:"Escribe primero tu correo y luego elige ¿Olvidaste tu contraseña?",resetSent:"Si existe una cuenta con ese correo, el enlace de restablecimiento va en camino.",verifySent:"Cuenta creada. Enviamos un correo de verificación. Verifícalo para publicar puntuaciones en la clasificación.",needVerify:"Verifica tu correo para publicar puntuaciones en la clasificación."});
+let NOCFG=false,FB=null,FBU=null,guestMode=false,authMode="in",lastUid="__init__";
 function initFirebase(){
   if(!FIREBASE_CONFIG.apiKey||!window.firebase)return false;
   try{firebase.initializeApp(FIREBASE_CONFIG);FB={auth:firebase.auth(),db:firebase.firestore()};return true}catch(e){FB=null;return false}
@@ -361,6 +362,7 @@ function setAuthText(){
   $("aPass").placeholder=x.aPass;$("aPass").setAttribute("aria-label",x.aPass);
   $("aGoogle").textContent=x.google;$("aForgot").textContent=x.forgot;
   setAuthMode(authMode);renderFbAcct();
+  if(NOCFG)amsg(x.noCfg);
 }
 function showAuth(on){
   ["start","over","game"].forEach(id=>$(id).classList.add("hide"));
@@ -408,6 +410,11 @@ async function forgot(){
   if(!email){amsg(x.eReset);return}
   try{await FB.auth.sendPasswordResetEmail(email)}catch(e){if(e&&e.code==="auth/network-request-failed"){amsg(x.eNet);return}}
   amsg(x.resetSent,true); // same message whether or not the account exists
+}
+function startNoConfig(){
+  NOCFG=true;showAuth(true);
+  document.querySelectorAll("#auth input,#auth button").forEach(e=>e.disabled=true);
+  setAuthText();
 }
 function startFbAuth(){
   $("start").classList.add("hide");$("acct").classList.add("hide");
